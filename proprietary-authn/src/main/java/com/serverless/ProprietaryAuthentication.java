@@ -43,6 +43,10 @@ public class ProprietaryAuthentication implements RequestHandler<Map<String, Obj
 		 *  }
 		 */
 		
+		// Here I always return a successful authentication response
+		// but reference the HTTPS POST call below to implement the call
+		// to an authentication mechanism like LDAP or web service.
+		
 		LOG.info("Received: {}", input);
 		// create the unique value as a token value
 		String uuid = UUID.randomUUID().toString();
@@ -69,7 +73,7 @@ public class ProprietaryAuthentication implements RequestHandler<Map<String, Obj
 			HttpsURLConnection con = (HttpsURLConnection)url.openConnection();
 			con.setRequestProperty("Content-Type", "application/json; utf-8");
 			con.setRequestProperty("Accept", "application/json");
-			con.setRequestProperty("Authorization", "SSWS 00C-FZqVc3fE62z-uVkDZZx5atrYyZsIJMrEpPsUEE");
+			con.setRequestProperty("Authorization", "SSWS <API key>");
 
 			if (con.getResponseCode() != 200) {
 				throw new RuntimeException("Failed : HTTP error code : "
@@ -107,7 +111,7 @@ public class ProprietaryAuthentication implements RequestHandler<Map<String, Obj
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Accept", "application/json");
-			con.setRequestProperty("Authorization", "SSWS 00C-FZqVc3fE62z-uVkDZZx5atrYyZsIJMrEpPsUEE");
+			con.setRequestProperty("Authorization", "SSWS <API key>");
 			con.setDoOutput(true);
 			
 			/*
