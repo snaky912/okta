@@ -1,0 +1,5 @@
+# This is assuming the hashed password contains random generated salt. Salt Order is set in the load.py file
+firstName,lastName,email,hash
+Test,Dummy,dummytest9@malliantor.com,PdPMlOei75Q/X14njuVbly1dCy+LdoUCLMx6f8w8bVMojsFi1mVfrw==
+#Mike,Tiger,mike.tiger@med.org,PdPMlOei75Q/X14njuVbly1dCy+LdoUCLMx6f8w8bVMojsFi1mVfrw==
+#Ed,Orgeron,ed.orgeron@med.org,PdPMlOei75Q/X14njuVbly1dCy+LdoUCLMx6f8w8bVMojsFi1mVfrw==
