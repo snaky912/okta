@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Built-By: karmenlei
+Build-Jdk: 13
+Implementation-Title: scim-server-mysql
+Implementation-Version: 1.0.0-SNAPSHOT
+Implementation-Vendor-Id: com.okta.scim.sdk
+Created-By: Maven Integration for Eclipse
+
