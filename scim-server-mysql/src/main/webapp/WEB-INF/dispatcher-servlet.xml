@@ -11,10 +11,10 @@
          If you do not want to store any data in files, you can leave the value for these property empty-->
         <property name="usersFilePath" value=""/>
         <property name="groupsFilePath" value=""/>
-        <property name="mySQLHost" value="demo.ct4efbiwhutj.us-east-2.rds.amazonaws.com"/>
+        <property name="mySQLHost" value=<the mysql host>/>
         <property name="mySQLPort" value="3306"/>
-        <property name="mySQLLoginName" value="ec2user"/>
-        <property name="mySQLPassword" value="Passw0rd!!"/>
+        <property name="mySQLLoginName" value=<username>/>
+        <property name="mySQLPassword" value=<password>/>
         <property name="mySQLDatabaseName" value="dbo"/>
         <property name="recordType" value="ACCOUNT"/>
     </bean>
