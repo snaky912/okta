@@ -30,10 +30,6 @@ fi
 
 echo "Done. Setting variables..."
 
-export JAVA_HOME=$(dirname $(dirname $(readlink $(readlink $(which javac)))))
-export PATH=$PATH:$JAVA_HOME/bin
-export CLASSPATH=.:$JAVA_HOME/jre/lib:$JAVA_HOME/lib:$JAVA_HOME/lib/tools.jar
-
 echo "Installing unzip..."
 sudo yum -y install unzip
 
@@ -53,6 +49,10 @@ sudo sh -c 'chmod +x apache-tomcat-9.0.41/bin/*.sh'
 
 PUBLIC_IP=$(curl http://169.254.169.254/2009-04-04/meta-data/public-ipv4)
 
+export JAVA_HOME=$(dirname $(dirname $(readlink $(readlink $(which javac)))))
+export PATH=$PATH:$JAVA_HOME/bin
+export CLASSPATH=.:$JAVA_HOME/jre/lib:$JAVA_HOME/lib:$JAVA_HOME/lib/tools.jar
+
 echo "Creating a self signed cert and enable HTTPS in Tomcat..."
 
 local_openssl_config="
@@ -71,13 +71,17 @@ keyUsage = nonRepudiation, digitalSignature, keyEncipherment, dataEncipherment, 
 extendedKeyUsage = serverAuth, clientAuth, timeStamping
 "
 
-openssl req -newkey rsa:2048 -nodes -keyout "scim_tom.key.pem" -x509 -sha256 -days 3650 -config <(echo "$local_openssl_config") -out "scim_tom.cert"
+keytool -genkey -alias scim_tom -dname "cn=${PUBLIC_IP}, ou=IT, o=AnyCompany, l=sf, s=ca, c=us" -ext san=ip:$PUBLIC_IP -keyalg RSA -keystore scim_tomcat_keystore -storepass Passw0rd!! -keypass Passw0rd!! -noprompt
 
-openssl x509 -noout -text -in "scim_tom.cert"
+keytool -export -keystore scim_tomcat_keystore -alias scim_tom -file scim_tomcat.cert -storepass Passw0rd!! -noprompt
 
-openssl pkcs12 -export -name scim_tom -in scim_tom.cert -inkey scim_tom.key.pem -out scim_tom_keystore.p12 -passin pass:Passw0rd!! -passout pass:Passw0rd!!
+#openssl req -newkey rsa:2048 -nodes -keyout "scim_tom.key.pem" -x509 -sha256 -days 3650 -config <(echo "$local_openssl_config") -out "scim_tom.cert"
 
-keytool -importkeystore -destkeystore scim_tomcat_keystore -srckeystore scim_tom_keystore.p12 -srcstoretype pkcs12 -alias scim_tom -srcstorepass Passw0rd!! -deststorepass Passw0rd!! -noprompt
+#openssl x509 -noout -text -in "scim_tom.cert"
+
+#openssl pkcs12 -export -name scim_tom -in scim_tom.cert -inkey scim_tom.key.pem -out scim_tom_keystore.p12 -passin pass:Passw0rd!! -passout pass:Passw0rd!!
+
+#keytool -importkeystore -destkeystore scim_tomcat_keystore -srckeystore scim_tom_keystore.p12 -srcstoretype pkcs12 -alias scim_tom -srcstorepass Passw0rd!! -deststorepass Passw0rd!! -noprompt
 
 echo "Done creating the self-signed cert and keystore, adding HTTPS support in Apache Tomcat..."
 
@@ -94,4 +98,10 @@ echo "Done deploying the scim connector, starting Tomcat..."
 
 sudo apache-tomcat-9.0.41/bin/startup.sh
 
-echo "Done starting Tomcat, exiting..."
+echo "Done starting Tomcat, adding cert into OPP agent and starting the agent..."
+
+sudo /opt/OktaProvisioningAgent/jre/bin/keytool -import -file scim_tomcat.cert -alias scim_tom -keystore /opt/OktaProvisioningAgent/jre/lib/security/cacerts -storepass changeit -noprompt
+
+sudo sed -i "s/-Xmx4096m/-Xmx4096m -Dhttps.protocols=TLSv1.2/" /opt/OktaProvisioningAgent/conf/settings.conf
+
+sudo service OktaProvisioningAgent start
