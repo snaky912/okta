@@ -37,16 +37,16 @@ public class CheckPasswordHandler implements RequestHandler<Map<String, Object>,
 		"}";
 		ObjectMapper om = new ObjectMapper();
 			root = om.readValue(output, Root.class);
-			
-		
+
+
  */
-		// First retrieve the credential from the input				
+		// First retrieve the credential from the input
 		JSONObject request = new JSONObject(input.get("body").toString());
 		LOG.info("Request object : {}", request);
 		JSONObject credential = request.getJSONObject("data").
 											  getJSONObject("context").
 											  getJSONObject("credential");
-		
+
 		// We need to compose the DN out of the username element in the request, hard-coding the parent DN
 		// for development purposes, in real implementation we might want to retrieve it from a properties
 		// file.
@@ -56,10 +56,10 @@ public class CheckPasswordHandler implements RequestHandler<Map<String, Object>,
 		String password = credential.getString("password");
 		LOG.info("userDN : {}", userDN);
 		LOG.info("password : {}", password);
-		
+
 		try {
 			LDAPConnection connection = new LDAPConnection();
-			connection.connect("pds.karmenlei.net", 1389);
+			connection.connect("<Directory hostname>", 1389);
 			LOG.info("Connected to my directory");
 			connection.bind(userDN, password);
 			LOG.info("Bind request has been called");
@@ -115,13 +115,13 @@ public class CheckPasswordHandler implements RequestHandler<Map<String, Object>,
 			      				.setHeaders(Collections.singletonMap("Content-Type", "application/json"))
 			      				.build();
 		}
-		
+
 	}
 	/*
 	public static void main(String[] args) {
-		
+
 		CheckPasswordHandler cph = new CheckPasswordHandler();
-		
+
 		cph.handleRequest(null, null);
 
 	}
